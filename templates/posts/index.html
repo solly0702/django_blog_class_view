@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Post{% endblock %}
+
+{% block body %}
+<div class="index">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <h1 class="header">Django Blog</h1>
+          <small>Create your own blog from here <a href="{% url 'posts:create' %}" class="btn btn-primary pull-right">Create Post</a></small>
+      </div>
+    </div>
+
+    <hr />
+
+    {% for post in posts %}
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        <a href="#">
+          {% if post.image %}
+          <img class="img-responsive center-block" src="{{ post.image.url }}" alt="post-img" />
+          {% else %}
+          <img class="img-responsive center-block" src="http://placehold.it/900x500" alt="post-img" />
+          {% endif %}
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        {% if post.draft %}
+        <h3 class="panel-title">
+          <span style='color:red;'>For staffs: Draft</span>
+          <small>{% if post.pub_date > today %}Will be posted{% endif %}</small>
+        </h3>
+        {% endif %}
+        <h3>{{ post.title }}</h3>
+        <h4>{{ post.pub_date }}</h4>
+        <p class="content-markdown">{{ post.get_markdown | truncatechars_html:50}}</p>
+        <a class="btn btn-primary" href="{{ post.get_absolute_url }}">Details...</a>
+        <p>comments numbers goes here</p>
+      </div>
+    </div>
+
+
+    <hr />
+    {% endfor %}
+
+    {% if posts.has_other_pages %}
+    <div class="row">
+      <div class="col-lg-12">
+        <ul class="pager">
+          {% if posts.has_previous %}
+          <li class="previous">
+            <a href="?page={{ posts.previous_page_number }}{% if reqnest.GET.q %}&q={{ request.GET.q}}{% endif %}"><span class="glyphicon glyphicon-arrow-left"></span> Previous</a>
+            <a href="?page=1{% if reqnest.GET.q %}&q={{ request.GET.q}}{% endif %}">First Page</a>
+          </li>
+          {% endif %}
+          <li class="currnet">
+            <span class="page_number">Page {{ posts.number }} of {{ posts.paginator.num_pages }}</span>
+          </li>
+          {% if posts.has_next %}
+          <li class="next">
+            <a href="?page={{ posts.next_page_number }}{% if reqnest.GET.q %}&q={{ request.GET.q}}{% endif %}">Next <span class="glyphicon glyphicon-arrow-right"></span></a>
+            <a href="?page={{ posts.paginator.count }}{% if reqnest.GET.q %}&q={{ request.GET.q}}{% endif %}">Last Page</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <ul class="pagination">
+          {% for idx in page_range %}
+            {% if posts.number == idx %}
+              <li class="active">
+                <span>{{ idx }}</span>
+              </li>
+            {% else %}
+            <li>
+              <a href="?page={{ idx }}{% if reqnest.GET.q %}&q={{ request.GET.q}}{% endif %}">{{ idx }}</a>
+            </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock%}

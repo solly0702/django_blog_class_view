@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <base href="/">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="Solly" content="portfolio">
+
+  <!-- CDN -->
+  {% load staticfiles %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+  {% block pageDown %}{% endblock pageDown %}
+  <title>Django Blog | {% block title %}{% endblock %}</title>
+</head>
+<body>
+  <!-- NAVIGATION -->
+  <nav class="navbar navbar-inverse navbar-fixed-top navtop" role="navigation">
+    <div class="container navtop">
+      <!-- TOGGLE -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navoptions">
+          <span class="sr-only">TOGGLE NAVIGATION</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand navtop" href="{% url 'posts:index' %}">Django Blog</a>
+      </div>
+      <!-- NAV OPTIONS -->
+      <div class="collapse navbar-collapse" id="navoptions">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="#">About</a>
+          </li>
+          <li>
+            <a href="#">My Blog</a>
+          </li>
+          <li>
+            <a href="#">Contact</a>
+          </li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <form class="navbar-form navbar-left" method="get" role="search">
+            <div class="input-group">
+              <input type="text" name="q" placeholer="Search Posts" class="form-control" value="{{ request.GET.q }}"/>
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Search</button>
+              </span>
+            </div>
+          </form>
+          <li>
+            <a href="#">Register</a>
+          </li>
+          <li>
+            <a href="#">Login</a>
+          </li>
+        </ul>
+      </div>
+      <!-- NAV OPTIONS END -->
+    </div>
+    <!-- CONTAINER END -->
+  </nav>
+  <div class="block-body" style="margin-top:50px;">
+    {% include "shared/flash_msg.html" %}
+
+    <div id="fb-root"></div>
+
+    {% block body %}
+    {% endblock %}
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js"></script>
+
+
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=1760547104189909";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+
+  <script>
+  $(function(){
+
+    var title = $("#id_title")
+    var content = $("#id_content")
+
+    function setPreview(title, content) {
+      $("#preview-title").html(title.val())
+      $("#preview-content").html(marked(content.val()))
+    }
+
+    $(".content-preview").hide()
+    $(".form-content").keyup(function() {
+        $(".content-preview").show()
+        setPreview(title, content)
+    })
+
+    $(".comment-reply-btn").click(function(e) {
+      e.preventDefault();
+      $(this).parent().parent().siblings(".comment-reply").fadeToggle();
+      $(this).parent().siblings(".comment-reply").fadeToggle();
+    })
+
+  //   $(".content-markdown").each(function() {
+  //     var content = $(this).html()
+  //     var markedContent = marked(content)
+  //     $(this).html(markedContent)
+  //   })
+
+
+  })
+  </script>
+
+</body>
+
+
+
+</html>

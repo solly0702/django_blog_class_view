@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Comments{% endblock %}
+
+{% block body %}
+
+<div class="col-sm-6 col-sm-offset-3">
+  <blockquote class="comments">
+    <h3>{{ comment.content }}</h3>
+    <footer>
+      by {{ comment.user }} | {{ comment.updated_at|timesince }} ago | {% if comment.children.count > 0 %}{{ comment.children.count }} Comment{% endif %}{% if comment.children.count > 1 %}s{% endif %}</a>
+    </footer>
+    <hr />
+    <div>
+      {% for child_comment in comment.children %}
+      <blockquote class="blockquote-reverse">
+        <p>{{ child_comment.content }}</p>
+        <footer>
+          by {{ child_comment.user }} | {{ comment.updated_at|timesince }} ago
+        </footer>
+      </blockquote>
+      {% endfor %}
+
+      <form method="post" action="{% url 'comments:thread' comment.id %}">{% csrf_token %}
+        <div class="form-group" >
+          {{ comment_form }}
+          <input type="hidden" name="parent_id" value="{{ comment.id }}" />
+        </div>
+        <button type="submit" class="btn btn-primary pull-right">Reply</button>
+      </form>
+  </blockquote>
+</div>
+
+{% endblock %}

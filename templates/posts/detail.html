@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load urlify %}
+{% block title %}Detail{% endblock %}
+
+{% block body %}
+<div class="detail">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="panel panel-default">
+
+          <div class="panel panel-heading">
+            {% if post.draft %}
+              <h3 class="panel-title"><span style='color:red;'>Draft</span></h3>
+            {% endif %}
+            <h3 class="panel-title">{{ post.title }} <small>created by {% if post.user.full_name %} {{ post.user.get_full_name }} {% endif %} {{ post.user }}</small>  {{ post.pub_date }}<span class="pull-right">{{ post.updated_at | timesince }}</span></h3>
+            <h3>Read Time: {% if post.read_time|time:"i" <= "01" %} < 1 minute {% elif post.read_time|time:"i" < "10" %} < 10 minutes {% else %} {{ post.read_time|time:"i"}} minutes {% endif %}</h3>
+            <hr />
+            <a href="{% url 'posts:update' id=post.id %}" class="btn btn-info">Update</a>
+            <form action="{% url 'posts:delete' id=post.id %}" method="post" style="display: inline;">
+              {% csrf_token %}
+              <input type="hidden" name="post_id" value="{{ post.id}}" />
+              <button type="submit" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+            </form>
+          </div>
+          <!-- {{ request.build_absolute_uri }}
+          {{ request.user}}
+          <h4>registered filter{{ post.content| truncatechars:80 | urlify }} </h4> -->
+          <div class="panel-body">
+            <img src="{% if post.image %}{{ post.image.url }}{% else %}http://placehold.it/800x300{% endif %}" alt="detail-img" class="img-responsive center-block" />
+            <!-- FACEBOOK LIKE BUTTON -->
+            <p class="text-center">
+              <div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-layout="standard" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+            </p>
+            <!-- END FACEBOOK LIKE BUTTON -->
+            <div class="detail-social-sharing">
+              <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}">
+                Facebook
+              </a> |
+              <a href="https://twitter.com/home?status={{ post.content| truncatechars:80 | urlify }}%20{{ request.build_absolute_uri }}">
+                Twitter
+              </a> |
+              <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ post.title }}&summary={{ post.content| truncatechars:20 | urlify }}&source={{ request.build_absolute_uri }}">
+                Linkedin
+              </a> |
+              <a href="http://www.reddit.com/submit?url={{ request.build_absolute_uri }}&title={{ post.content| truncatechars:20 | urlify }}">
+                Reddit
+              </a>
+            </div>
+            <hr />
+            <!-- {{ post.content | safe | linebreaks }} -->
+            <p class="content-markdown">{{ post.get_markdown | safe }}</p>
+          </div>
+          <hr />
+          <br />
+          <!-- FACEBOOK COMMENTS -->
+          <!-- <div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div> -->
+          <!-- END FACEBOOK COMMENTS -->
+          <div class="panel-footer">
+            <div class="well">
+              <h4>Leave a Comment:</h4>
+              <form method="post" action="{% url 'posts:detail_slug' post.slug %}">{% csrf_token%}
+                <div class="form-group">
+                  <!-- <input type="hidden" name="content_type" value="{{ post.get_content_type }}"/>
+                  <input type="hidden" name="object_id" value="{{ post.id }}"/>
+                  <input type="hidden" name="parent_id" required="false" />
+                  <textarea class="form-control" name="content" rows="3"></textarea> -->
+                  {{ comment_form }}
+                </div>
+                <button type="sumit" class="btn btn-primary">Post Comment</button>
+              </form>
+            </div>
+            <hr />
+            {% for comment in comments %}
+            <div class="media">
+              <a class="pull-left" href="#"><img class="media-object" src="http://placehold.it/64x64" /></a>
+              <div class="media-body">
+                <h4 class="media-heading">{{ comment.user }} <small>{{ comment.updated_at | timesince }} ago {% if comment.children.count > 0 %} | {{ comment.children.count }} Comment{% if comment.children.count > 1%}s{% endif %} {% endif %} | <a href="#" class="comment-reply-btn"> Reply</a> | <a class="comment-thread" href="{{ comment.get_absolute_url }}">Comment Thread</a></small></h4>
+                <p>
+                  <!-- {{ post.comment_set.all }} -->
+                  <!-- {{ properties }} -->
+                  {{ comment.content }}
+                </p>
+                <form method="post" action="{% url 'posts:detail_slug' post.slug %}">{% csrf_token %}
+                  <div class="form-group" >
+                    {{ comment_form }}
+                    <input type="hidden" name="parent_id" value="{{ comment.id }}" />
+                  </div>
+                  <button type="submit" class="btn btn-primary pull-right">Reply</button>
+                </form>
+                {% for child_comment in comment.children %}
+                <div class="media comment-reply">
+                  <a class="pull-left" href="#"><img class="media-object" src="http://placehold.it/64x64" /></a>
+                  <div class="media-body">
+                    <h4 class="media-heading">{{ child_comment.user }} <small>{{ child_comment.updated_at | timesince }}</small></h4>
+                    <p>
+                      {{ child_comment.content}}
+                    </p>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

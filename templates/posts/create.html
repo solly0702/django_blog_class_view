@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block pageDown %}
+  {{ form.media }}
+{% endblock pageDown %}
+{% block title %}Create{% endblock %}
+
+{% block body %}
+<div class="post-create">
+  <!-- CONTAINER -->
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 content-preview">
+        <h3 class="text-center">Preview</h3>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="panel-title">
+              <h3 id="preview-title"></h3>
+            </div>
+          </div>
+          <div class="panel-body">
+            <p id="preview-content"></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h3 class="text-center">{{ request.user }}</h3>
+        <!-- FORM PANEL -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="panel-title">
+              <h3>{% if update %}Update{% else %}Create{% endif %} Post</h3>
+            </div>
+          </div>
+          <div class="panel-body form-content">
+            <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              {% include "shared/form_template.html" %}
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-success">Submit</button>
+                  <a href="{% url 'posts:index' %}" class="btn btn-danger">Cancel</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- FORM PANEL END -->
+      </div>
+    </div>
+  </div>
+  <!-- CONTAINER END -->
+</div>
+{% endblock %}

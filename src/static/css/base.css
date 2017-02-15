@@ -1,0 +1,23 @@
+body {
+  padding-top: 50px;
+}
+
+.wmd-wrapper {
+  min-width: 340px !important;
+}
+.wmd-wrapper .wmd-panel {
+  margin: 0 !important;
+  min-width: 340px !important;
+  width: 50% !important;
+}
+
+.comment-reply {
+  display: none;
+}
+
+/*IMAGE RESPONSIVE*/
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
