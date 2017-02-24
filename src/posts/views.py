@@ -106,7 +106,7 @@ class PostDetailView(MultiSlugMixin, DetailView):
 
     def post(self, request, slug=None):
         form = CommentForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and request.user.is_authenticated():
             content_type = ContentType.objects.get(model=form.cleaned_data.get("content_type"))
             object_id = form.cleaned_data.get("object_id")
             content = form.cleaned_data.get("content")

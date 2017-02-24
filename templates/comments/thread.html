@@ -16,18 +16,24 @@
       <blockquote class="blockquote-reverse">
         <p>{{ child_comment.content }}</p>
         <footer>
-          by {{ child_comment.user }} | {{ comment.updated_at|timesince }} ago
+          by {{ child_comment.user }} | {{ comment.updated_at|timesince }} ago | {% if request.user == child_comment.user %} <a href="{{ child_comment.get_delete_url }}">Delete</a> {% endif %}
         </footer>
       </blockquote>
       {% endfor %}
-
+      {% if request.user.is_authenticated %}
       <form method="post" action="{% url 'comments:thread' comment.id %}">{% csrf_token %}
         <div class="form-group" >
           {{ comment_form }}
           <input type="hidden" name="parent_id" value="{{ comment.id }}" />
         </div>
-        <button type="submit" class="btn btn-primary pull-right">Reply</button>
+        <div class="form-button pull-right">
+          <button type="submit" class="btn btn-primary">Reply</button>
+          {% if request.user == comment.user %}<a href="{% url 'comments:delete' comment.id %}" class="btn btn-warning">Delete</a>{% endif %}
+        </div>
       </form>
+      {% else %}
+      <p>You must login to leave a comment!</p>
+      {% endif %}
   </blockquote>
 </div>
 

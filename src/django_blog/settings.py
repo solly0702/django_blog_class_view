@@ -42,11 +42,12 @@ INSTALLED_APPS = [
     # MY APPLICATION
     'posts',
     'comments',
+    'accounts',
 
     # THIRD PARTY
     'pagedown',
     'markdown_deux',
-    'crispy_forms'
+    'crispy_forms',
 ]
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-
+from django.http import Http404, HttpResponse
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 # MESSAGES
@@ -12,16 +13,51 @@ from .models import Comment
 # FORM
 from .forms import CommentForm
 
+@login_required(login_url="accounts:login") # settings.py => LOGIN_URL = '/login/'
+def comment_delete(request, id):
+    try:
+        comment = Comment.objects.get(id=id)
+    except:
+        raise Http404
+
+    if comment.user != request.user:
+        messages.success(request, "You do not have permission to do this action.", extra_tags="alert-danger")
+        return redirect("comments:thread", id=id)
+
+        ## CUSTOM HTTP REQUEST
+        # res = HttpResponse("You do not have permissiont for this action")
+        # res.status_code = 403
+        # return res
+        # return render(request, "403.html", context, status_code=403)
+
+    if request.method == "POST":
+        parent_url = comment.content_object.get_absolute_url()
+        comment.delete()
+        messages.success(request, "Successfully deleted.",
+                         extra_tags="alert-success")
+        return redirect(parent_url)
+    context = {
+        "comment": comment
+    }
+    return render(request, "comments/delete.html", context)
+
 
 def comment_thread(request, id):
-    comment = get_object_or_404(Comment, id=id)
+    try:
+        comment = Comment.objects.get(id=id)
+    except:
+        raise Http404
+
+    if not comment.is_parent:
+        comment = comment.parent
+
     initial_data = {
         "content_type": comment.content_type,
         "object_id": comment.object_id,
     }
     form = CommentForm(request.POST or None, initial=initial_data)
     # print(form.errors)
-    if form.is_valid():
+    if form.is_valid() and request.user.is_authenticated:
         content_type = ContentType.objects.get(
             model=form.cleaned_data.get("content_type"))
         obj_id = form.cleaned_data.get("object_id")

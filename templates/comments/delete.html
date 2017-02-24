@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}Comments{% endblock %}
+
+{% block body %}
+
+<div class="col-sm-6 col-sm-offset-3">
+    <h2>Confirm Delete</h2>
+    <form method="post" action="{% url 'comments:delete' comment.id %}">{% csrf_token %}
+      <div class="form-group" >
+        <p class="lead">To confirm to delete "{{ comment.content }}", Please click Delete button below!</p>
+      </div>
+      <div class="form-button pull-right">
+        {% if request.user == comment.user %}<button type="submit" class="btn btn-danger">Delete</button>{% endif %}
+        <a href="{{ comment.get_absolute_url }}" class="btn btn-primary">Cancel</a>
+      </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -57,8 +57,10 @@
           <!-- <div class="fb-comments" data-href="{{ request.build_absolute_uri }}" data-numposts="5"></div> -->
           <!-- END FACEBOOK COMMENTS -->
           <div class="panel-footer">
+
             <div class="well">
               <h4>Leave a Comment:</h4>
+              {% if request.user.is_authenticated %}
               <form method="post" action="{% url 'posts:detail_slug' post.slug %}">{% csrf_token%}
                 <div class="form-group">
                   <!-- <input type="hidden" name="content_type" value="{{ post.get_content_type }}"/>
@@ -69,7 +71,11 @@
                 </div>
                 <button type="sumit" class="btn btn-primary">Post Comment</button>
               </form>
+              {% else %}
+              <p>You must login to leave a comment!</p>
+              {% endif %}
             </div>
+
             <hr />
             {% for comment in comments %}
             <div class="media">
@@ -81,6 +87,8 @@
                   <!-- {{ properties }} -->
                   {{ comment.content }}
                 </p>
+                
+                {% if request.user.is_authenticated %}
                 <form method="post" action="{% url 'posts:detail_slug' post.slug %}">{% csrf_token %}
                   <div class="form-group" >
                     {{ comment_form }}
@@ -88,6 +96,10 @@
                   </div>
                   <button type="submit" class="btn btn-primary pull-right">Reply</button>
                 </form>
+                {% else %}
+                <p>You must login to leave a comment!</p>
+                {% endif %}
+
                 {% for child_comment in comment.children %}
                 <div class="media comment-reply">
                   <a class="pull-left" href="#"><img class="media-object" src="http://placehold.it/64x64" /></a>
